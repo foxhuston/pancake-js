@@ -1,0 +1,3 @@
+exports.botKey = "";
+exports.autoReconnect = true;
+exports.autoMark = true;

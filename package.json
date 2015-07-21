@@ -1,0 +1,27 @@
+{
+  "name": "pancake-js",
+  "version": "1.0.0",
+  "description": "A simple bot for our slack",
+  "main": "app/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoffhuston/pancake-js.git"
+  },
+  "keywords": [
+    "slack",
+    "bot"
+  ],
+  "author": "Geoff Huston",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/geoffhuston/pancake-js/issues"
+  },
+  "homepage": "https://github.com/geoffhuston/pancake-js#readme",
+  "dependencies": {
+    "ramda": "^0.17.1",
+    "slack-client": "^1.4.1"
+  }
+}
