@@ -29,6 +29,11 @@ function tok(str) {
         } else if(str.match(/^http/)) {
             currentTok += currentChar;
             matchingLink = true;
+        } else if(str.match(/^\.\.\./)) {
+            tpush();
+            currentTok = '...';
+            tpush();
+            str = str.slice(2);
         } else if(currentChar === ' ') {
             tpush();
         } else if (currentChar.match(punctMatch)) {
