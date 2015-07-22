@@ -1,5 +1,3 @@
-
-
 function tok(str) {
     var toks = [];
     var currentTok = '';
@@ -51,7 +49,7 @@ function chunk(toks) {
     var currentSentence = [];
     var sentences = [];
 
-    var stopMatch = /(\.\.\.)|[.!?]/
+    var stopMatch = /^(\.\.\.|[.!?])$/;
 
     while(toks.length > 0) {
         var currentTok = toks[0];
@@ -59,6 +57,7 @@ function chunk(toks) {
 
         if(currentTok.match(stopMatch)) {
             sentences.push(currentSentence);
+            currentSentence = [];
         }
 
         toks = toks.slice(1);
@@ -68,13 +67,7 @@ function chunk(toks) {
 }
 
 function parse(str) {
-    return tok(str);
+    return chunk(tok(str));
 }
 
-var test = 'Hello. This is a test? With a link, this time https://docs.unrealengine.com/latest/INT/Engine/UMG/UserGuide/Fonts/index.html you guys.';
-var test2 = 'Hello. This is a test? With a link, this time https://docs.unrealengine.com/latest/INT/Engine/UMG/UserGuide/Fonts/index.html.';
-var test3 = 'Hello. This is a test? With a link, this time https://docs.unrealengine.com/latest/INT/Engine/UMG/UserGuide/Fonts/';
-var test4 = 'Hello. This is a test? With a link, this time https://docs.unrealengine.com/latest/INT/Engine/UMG/UserGuide/Fonts/.';
-var test5 = 'Hello... Yeah... Yeah.';
-
-console.log(parse(test4));
+module.exports = parse;

@@ -1,5 +1,6 @@
 var fs = require('fs');
 var R = require('ramda');
+var parse = require('./parse');
 
 var chatterFile = require('path').join(__dirname, 'chatter.json');
 
@@ -7,7 +8,7 @@ var Stop = function (stopChar) {
     this.isStop = true;
     this.stopChar = stopChar;
     this.getStopChar = function () {
-        return stopChar ? stopChar : '.';
+        return '';
     }
 };
 
@@ -63,12 +64,9 @@ var updateChain = function(fromWordOrStart, toWordOrStop) {
 var generateChain = function (dat) {
     dat = dat.replace(/[\n"()]/g, ' ');
 
-    // Check this one: xs.split(/(.*?[.?])/). I can just slice off the last character
-    // and use that for the stop character. Also, I need to do URLs better.
-    var sentences = R.map(R.trim, R.filter(R.compose(R.not, R.isEmpty), dat.split(/[.?!]/)));
+    var sentences = parse(dat);
 
-    R.forEach(function(sentence) {
-        var words = sentence.split(/[ ]/);
+    R.forEach(function(words) {
         words.push(new Stop());
 
         updateChain(true, words[0]);
@@ -121,7 +119,9 @@ var generateSentence = function (fromWord) {
         return w.getStopChar();
     }
 
-    return (fromWord ? ' ' : '') + w + generateSentence(w);
+    var shouldPrevSpace = fromWord && !(w.match(/^[.?!,]/))
+
+    return (shouldPrevSpace ? ' ' : '') + w + generateSentence(w);
 };
 
 // Bot connectors
