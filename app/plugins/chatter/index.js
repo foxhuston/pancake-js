@@ -62,6 +62,9 @@ var updateChain = function(fromWordOrStart, toWordOrStop) {
 
 var generateChain = function (dat) {
     dat = dat.replace(/[\n"()]/g, ' ');
+
+    // Check this one: xs.split(/(.*?[.?])/). I can just slice off the last character
+    // and use that for the stop character. Also, I need to do URLs better.
     var sentences = R.map(R.trim, R.filter(R.compose(R.not, R.isEmpty), dat.split(/[.?!]/)));
 
     R.forEach(function(sentence) {

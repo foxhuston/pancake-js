@@ -4,6 +4,8 @@ var R = require('ramda');
 var path = require('path');
 var fs = require('fs');
 
+var pluginDir = path.join(__dirname, 'plugins/');
+
 var slack = new Slack(config.botKey, config.autoReconnect, config.autoMark);
 
 slack.on('open', function () {
@@ -73,12 +75,14 @@ slack.on('error', function (e) {
 
 var plugins = [];
 
-var p = path.join(__dirname, 'plugins');
-fs.readdirSync(p).forEach(function (file) {
-    if(file.match(/[.]js$/)) {
-        plugins.push(require('./plugins/' + file));
+fs.readdirSync(pluginDir).forEach(function (file) {
+    var stat = fs.statSync(pluginDir + file);
+    if(stat.isDirectory()) {
+        plugins.push(require(pluginDir + file));
     }
 });
+
+console.log(plugins);
 
 plugins = R.sortBy(R.prop('priority'), plugins);
 
