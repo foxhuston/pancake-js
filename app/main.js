@@ -48,8 +48,15 @@ slack.on('message', function(message) {
     })(channel);
 
     if(message.type === 'message' && message.text) {
+        // Need to make this synchronous, so that only one plugin
+        // responds
+
+        var toMe = message.text.match(slack.self.id) 
+                    || message.text.match(slack.self.name)
+                    || channel.getType() === 'DM';
+
         R.forEach(function(p) {
-            p.message(user, message.text, replyFn);
+            p.message(user, message.text, toMe, replyFn);
         }, plugins);
     }
 
@@ -74,6 +81,5 @@ fs.readdirSync(p).forEach(function (file) {
 });
 
 plugins = R.sortBy(R.prop('priority'), plugins);
-
 
 slack.login();

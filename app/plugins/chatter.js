@@ -61,7 +61,7 @@ var updateChain = function(fromWordOrStart, toWordOrStop) {
 }
 
 var generateChain = function (dat) {
-    dat = dat.replace(/[\n"]/g, ' ');
+    dat = dat.replace(/[\n"()]/g, ' ');
     var sentences = R.map(R.trim, R.filter(R.compose(R.not, R.isEmpty), dat.split(/[.?!]/)));
 
     R.forEach(function(sentence) {
@@ -141,9 +141,11 @@ exports.init();
 console.log(generateSentence());
 */
 
-exports.message = function(who, message, replyFn) {
+exports.message = function(who, message, toMe, replyFn) {
     generateChain(message);
     fs.writeFile(chatterFile, JSON.stringify(chatData));
-
-    replyFn(generateSentence());
+    
+    if(toMe) {
+        replyFn(generateSentence());
+    }
 }
