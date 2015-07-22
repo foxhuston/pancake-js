@@ -1,8 +1,14 @@
 var fs = require('fs');
 var R = require('ramda');
 
-var Stop = function () { 
+var chatterFile = require('path').join(__dirname, 'chatter.json');
+
+var Stop = function (stopChar) { 
     this.isStop = true;
+    this.stopChar = stopChar;
+    this.getStopChar = function () {
+        return stopChar ? stopChar : '.';
+    }
 };
 
 var chatData = {
@@ -10,13 +16,6 @@ var chatData = {
     words: { }
 };
 
-/*
- * Chain data like:
- * {
- *      "word": {"next": {count: 10, currentProb: 0.01}}
- *      ...
- * }
- */
 
 var updateChain = function(fromWordOrStart, toWordOrStop) {
     var balanceProbabilities = function(entry) {
@@ -62,7 +61,8 @@ var updateChain = function(fromWordOrStart, toWordOrStop) {
 }
 
 var generateChain = function (dat) {
-    var sentences = R.map(R.trim, R.filter(R.compose(R.not, R.isEmpty), dat.split(/[.\n]/)));
+    dat = dat.replace(/[\n"]/g, ' ');
+    var sentences = R.map(R.trim, R.filter(R.compose(R.not, R.isEmpty), dat.split(/[.?!]/)));
 
     R.forEach(function(sentence) {
         var words = sentence.split(/[ ]/);
@@ -115,31 +115,35 @@ var generateSentence = function (fromWord) {
     }
 
     if(w.isStop) {
-        return ".";
+        return w.getStopChar();
     }
 
     return (fromWord ? ' ' : '') + w + generateSentence(w);
 };
 
-generateChain('this is a test.');
-// console.log(JSON.stringify(chatData, null, 2));
+// Bot connectors
 
-console.log(generateSentence());
+exports.priority = 10000;
 
-/*
-export.priority = 10000;
+exports.initNeedsBacklog = !fs.existsSync(chatterFile);
 
-export.initNeedsBacklog = !fs.existsSync('chatter.json');
-
-export.init = function(dat) {
+exports.init = function(dat) {
     if(dat) {
-        chatData = dat;
+        generateChain(dat.join('. '));
+        fs.writeFile(chatterFile, JSON.stringify(chatData));
     } else {
-        chatData = require('chatter.json');
+        chatData = require(chatterFile);
     }
 };
 
-export.message = function(who, message, replyFn) {
-    return message;
-}
+/*
+exports.init();
+console.log(generateSentence());
 */
+
+exports.message = function(who, message, replyFn) {
+    generateChain(message);
+    fs.writeFile(chatterFile, JSON.stringify(chatData));
+
+    replyFn(generateSentence());
+}
