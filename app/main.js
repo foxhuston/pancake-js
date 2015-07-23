@@ -9,7 +9,6 @@ var pluginDir = path.join(__dirname, 'plugins/');
 var slack = new Slack(config.botKey, config.autoReconnect, config.autoMark);
 
 slack.on('open', function () {
-    
     var sChannels = slack.channels;
 
     var channels = [];
@@ -54,7 +53,7 @@ slack.on('message', function(message) {
         // responds
 
         var toMe = message.text.match(slack.self.id) 
-                    || message.text.match(slack.self.name)
+                    || message.text.match(new RegExp(slack.self.name, "i"))
                     || channel.getType() === 'DM';
 
         R.forEach(function(p) {
