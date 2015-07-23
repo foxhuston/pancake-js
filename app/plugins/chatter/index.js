@@ -64,7 +64,7 @@ var updateChain = function(fromWordOrStart, toWordOrStop) {
 var generateChain = function (dat) {
     dat = dat.replace(/[\n"()]/g, ' ');
 
-    var sentences = parse(dat);
+    var sentences = R.filter(function (x) { return x.length > 1; }, parse(dat));
 
     R.forEach(function(words) {
         words.push(new Stop());
