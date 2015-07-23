@@ -132,23 +132,20 @@ exports.initNeedsBacklog = !fs.existsSync(chatterFile);
 
 exports.init = function(dat) {
     if(dat) {
-        generateChain(dat.join('. '));
+        R.forEach(function(d) { generateChain(d); }, dat);
         fs.writeFile(chatterFile, JSON.stringify(chatData));
     } else {
         chatData = require(chatterFile);
     }
 };
 
-/*
-exports.init();
-console.log(generateSentence());
-*/
-
 exports.message = function(who, message, toMe, replyFn) {
     generateChain(message);
     fs.writeFile(chatterFile, JSON.stringify(chatData));
     
-    if(toMe) {
+    var chance = Math.random();
+
+    if(toMe || chance > 0.90) {
         replyFn(generateSentence());
     }
 }

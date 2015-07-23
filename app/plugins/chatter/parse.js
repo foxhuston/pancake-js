@@ -68,6 +68,10 @@ function chunk(toks) {
         toks = toks.slice(1);
     }
 
+    if(currentSentence.length > 0) {
+        sentences.push(currentSentence);
+    }
+
     return sentences;
 }
 
